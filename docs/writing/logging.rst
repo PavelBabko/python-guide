@@ -1,59 +1,41 @@
-Logging
+﻿Протоколирование
 =======
 
 .. image:: https://farm5.staticflickr.com/4246/35254379756_c9fe23f843_k_d.jpg
 
-The :mod:`logging` module has been a part of Python's Standard Library since
-version 2.3.  It is succinctly described in :pep:`282`.  The documentation
-is notoriously hard to read, except for the `basic logging tutorial`_.
+Модуль протоколирования был частью стандартной библиотеки Python версии 2.3. Он кратко описан в PEP 282. Документацию, как известно, трудно читать, за исключением основного учебника по ведению журнала.
+Ведение журнала необходим для  двух целей:
 
-Logging serves two purposes:
+- ** Журнал диагностики** записывает события, связанные с работой приложения. Например, если пользователь вызывает сообщение об ошибке, журналы можно искать в контексте.
+- ** Аудит ведения журнала ** записывает события для бизнес-анализа. Транзакции пользователя могут быть извлечены и объединены с другими данными пользователя для отчетов или для оптимизации бизнес-целей.
 
-- **Diagnostic logging** records events related to the application's
-  operation. If a user calls in to report an error, for example, the logs
-  can be searched for context.
-- **Audit logging** records events for business analysis. A user's
-  transactions can be extracted and combined with other user details for
-  reports or to optimize a business goal.
-
-
-... or Print?
+... или Печать? ``
 -------------
 
-The only time that ``print`` is a better option than logging is when
-the goal is to display a help statement for a command line application.
-Other reasons why logging is better than ``print``:
-
-- The `log record`_, which is created with every logging event, contains
-  readily available diagnostic information such as the file name, full path,
-  function, and line number of the logging event.
-- Events logged in included modules are automatically accessible via the root
-  logger to your application's logging stream, unless you filter them out.
-- Logging can be selectively silenced by using the method
-  :meth:`logging.Logger.setLevel` or disabled by setting the attribute
-  :attr:`logging.Logger.disabled` to ``True``.
+Единственный раз, когда `` печать `` является лучшим вариантом, чем протоколирование, когда целью является показать справочную информацию для приложения командной строки. Другие причины, почему ведение журнала лучше, чем ``печать``:
 
 
-Logging in a Library
+- ` Запись журнала`_, которая создается с каждым журналом события, содержит легкодоступные диагностические сведения, такие как имя файла, полный курс, функция и номер строки события протоколирования.
+
+- События, зарегистрированные в включенных модулях, автоматически доступны через корневой регистратор в поток ведения журнала приложения, если их не отфильтровать.
+- Ведение журнала можно выборочно заглушить с помощью метода 
+  :meth:`logging.Logger.setLevel` или отключить, установив атрибут 
+  :attr:`logging.Logger.disabled` в значение  ``True``.
+
+
+Регистрация в библиотеке 
 --------------------
 
-Notes for `configuring logging for a library`_ are in the 
-`logging tutorial`_.  Because the *user*, not the library, should
-dictate what happens when a logging event occurs, one admonition bears
-repeating:
+Примечания по ` настройке протоколирования для библиотеки `_ приведены в 
+` учебном пособии `_.  Поскольку *пользователь*, а не библиотека, должен диктовать, что происходит, когда случается журнал событий, одно замечание носит повторяющийся характер:
 
-.. note::
-    It is strongly advised that you do not add any handlers other than
-    NullHandler to your library’s loggers.  
+.. Внимание!::
+    Настоятельно рекомендуется  не добавлять никаких обработчиков,  кроме NullHandler, в регистраторы вашей библиотеки.
 
 
-Best practice when instantiating loggers in a library is to only create them
-using the ``__name__`` global variable: the :mod:`logging` module creates a
-hierarchy of loggers using dot notation, so using ``__name__`` ensures
-no name collisions.
+Рекомендуется создавать экземпляры регистраторов в библиотеке только с помощью ``__name__`` общая переменная:  модуль ведения журнала создает иерархию регистраторов, используя точечную нотацию, так, что используя ``__name__``, гарантирует отсутствие конфликтов имен. 
 
-Here is an example of best practice from the `requests source`_ -- place
-this in your ``__init__.py``
+Вот пример наилучшего упражнения из `источника запросов`_ -- поместите это в свой  ``__init__.py``
 
 .. code-block:: python
 
@@ -61,40 +43,32 @@ this in your ``__init__.py``
     logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
-Logging in an Application
+Вход в приложение
 -------------------------
 
-The `twelve factor app <http://12factor.net>`_, an authoritative reference
-for good practice in application development, contains a section on
-`logging best practice <http://12factor.net/logs>`_. It emphatically
-advocates for treating log events as an event stream, and for
-sending that event stream to standard output to be handled by the
-application environment.
+`12-факторное приложение <http://12factor.net>`_, авторитетный справочник для эффективной практики в разработке приложений, содержит раздел по `ведению журнала лучшей практики <http://12factor.net/logs>`_. Оно решительно выступает за обработку событий журнала как потока событий и за отправку этого потока событий в стандартные выходные данные, которые будут обрабатываться средой приложения. 
 
 
-There are at least three ways to configure a logger:
-
-- Using an INI-formatted file:
-    - **Pro**: possible to update configuration while running using the
-      function :func:`logging.config.listen` to listen on a socket.
-    - **Con**: less control (*e.g.* custom subclassed filters or loggers)
-      than possible when configuring a logger in code.
-- Using a dictionary or a JSON-formatted file:
-    - **Pro**: in addition to updating while running, it is possible to load
-      from a file using the :mod:`json` module, in the standard library since
-      Python 2.6.
-    - **Con**: less control than when configuring a logger in code.
-- Using code:
-    - **Pro**: complete control over the configuration.
-    - **Con**: modifications require a change to source code.
+Существует, по крайней мере, три способа настройки регистратора:
 
 
-Example Configuration via an INI File
+- Использование Using an INI-formatted файла:
+    - ** За**: возможно обновление конфигурации во время работы с помощью функции :func:`logging.config.listen` чтобы воспроизводить на сокете.
+    - ** Против**: меньше управления (например, пользовательские подклассовые фильтры или регистраторы), чем это возможно при настройке регистратора в коде.
+- Использование словаря или файла в формате JSON:
+    - **За**: в дополнение к обновлению во время работы, можно загрузить из файла с помощью модуля :mod:`json`, в стандартной библиотеке начиная с Python 2.6. 
+    - **Против**: меньше управления, чем при настройке регистратора в коде.
+- Использование кода:
+    - **За**: полный контроль над конфигурацией.
+    - **Против**: модификации требуют изменения исходного кода.
+
+
+Пример конфигурации через INI-файл
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let us say the file is named ``logging_config.ini``.
-More details for the file format are in the `logging configuration`_
-section of the `logging tutorial`_.
+Скажем, файл называется ``logging_config.ini``.
+Более подробная информация о формате файла содержится в ` разделе конфигурации `_
+ведения журнала в ` учебном пособии `_.
 
 .. code-block:: ini
 
@@ -121,7 +95,7 @@ section of the `logging tutorial`_.
     format=%(asctime)s %(name)-12s %(levelname)-8s %(message)s
 
 
-Then use :meth:`logging.config.fileConfig` in the code:
+Затем используется :meth:`logging.config.fileConfig` в коде:
 
 .. code-block:: python
 
@@ -133,12 +107,10 @@ Then use :meth:`logging.config.fileConfig` in the code:
     logger.debug('often makes a very good meal of %s', 'visiting tourists')
     
 
-Example Configuration via a Dictionary
+Пример конфигурации через словарь 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As of Python 2.7, you can use a dictionary with configuration details.
-:pep:`391` contains a list of the mandatory and optional elements in
-the configuration dictionary.
+Начиная с Python 2.7, вы можете использовать словарь с подробностями конфигурации. :pep:`391` содержит список обязательных и необязательных элементов в словаре конфигурации. 
 
 .. code-block:: python
 
@@ -168,7 +140,7 @@ the configuration dictionary.
     logger.debug('often makes a very good meal of %s', 'visiting tourists')
 
 
-Example Configuration Directly in Code
+Пример конфигурации непосредственно в коде
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
