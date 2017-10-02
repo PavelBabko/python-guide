@@ -19,8 +19,8 @@
 
 - События, зарегистрированные в включенных модулях, автоматически доступны через корневой регистратор в поток ведения журнала приложения, если их не отфильтровать.
 - Ведение журнала можно выборочно заглушить с помощью метода 
-  `logging.Logger.setLevel <https://docs.python.org/3/library/logging.html#logging.Logger.setLevel>`_ или отключить, установив атрибут 
-  `logging.Logger.disabled` в значение ``True``.
+  **`logging.Logger.setLevel <https://docs.python.org/3/library/logging.html#logging.Logger.setLevel>`_**или отключить, установив атрибут 
+  **logging.Logger.disabled** в значение ``True``.
 
 
 Регистрация в библиотеке 
